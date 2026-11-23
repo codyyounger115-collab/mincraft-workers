@@ -1,0 +1,36 @@
+name: Build mod
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unzip the source
+        run: unzip -q villager-workers-source.zip
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.12"
+
+      - name: Build
+        working-directory: villager-workers
+        run: gradle build
+
+      - name: Upload the mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: villager-workers-jar
+          path: |
+            villager-workers/build/libs/*.jar
+            !villager-workers/build/libs/*-sources.jar
+            
